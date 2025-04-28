@@ -1,0 +1,10 @@
+domains:
+  - https://www.virgio.com/
+  - https://www.tatacliq.com/
+  - https://nykaafashion.com/
+  - https://www.westside.com/
+max_workers: 10
+max_depth: 3
+crawl_delay: 1s
+user_agent: "EcommerceCrawler/1.0 (+https://github.com/yourusername/ecommerce-crawler)"
+output_file: "outputs/product_urls.json"

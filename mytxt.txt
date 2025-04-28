@@ -1,0 +1,120 @@
+I have this problem statement to program
+
+Problem Statement: Crawler for Discovering Product URLs on E-commerce Websites
+
+**Objective:**
+Design and implement a web crawler whose primary task is to discover and list all product URLs across multiple e-commerce websites. You will be provided with a list of domains belonging to various e-commerce platforms. The output should be a comprehensive list of product URLs found on each of the given websites.
+
+**Requirements:**
+
+**Input:**
+
+The crawler should be able to handle these 4 domains at a bare minimum and also be able to scale to handle potentially hundreds.
+
+required domains: 
+[[https://www.virgio.com/,](https://www.virgio.com/) [https://www.tatacliq.com/,](https://www.tatacliq.com/) [https://nykaafashion.com/,](https://nykaafashion.com/) https://www.westside.com/]
+
+**Key Features:**
+
+- ⁠ ⁠URL Discovery: The crawler should intelligently discover product pages, considering different URL patterns that might be used by different websites (e.g., /product/, /item/, /p/).
+•⁠ ⁠Scalability: The solution should be able to handle large websites with deep hierarchies and a large number of products efficiently.
+•⁠ ⁠Performance: The crawler should be able to execute in parallel or asynchronously to minimize runtime, especially for large sites.
+•⁠ ⁠Robustness: Handle edge cases such as:
+    - Variations in URL structures across different e-commerce platforms.
+
+**Output:**
+
+the output should be strictly:
+
+1. A structured list or file that contains all the discovered product URLs for each domain. The output should map each domain to its corresponding list of “product” URLs.
+The URLs should be unique and must point directly to product pages (e.g., [www.example.com/product/12345](http://www.example.com/product/12345)).
+
+Provide me a golang project for the same
+let me know the folder structure
+
+For the implementation do as follows:
+
+1. take an array of url's, for starting take the url that are provided in the problem statement
+2. send them into a queue (implement a queue worker system like this https://github.com/Devyadav0512/processHandler)
+3. crawl web url provided 
+    3.1 Start from home page, follow links recursively (within domain).
+    3.2 Maintain a URL queue and visited set.
+    3.3 Detect product URLs.
+    3.4 Use robots.txt to respect crawl rules.
+    3.5 Use sitemaps if available—they often contain product links.
+4. Gracefully shut down workers when the queue is empty.
+5. save a JSON file in the system itself as response. keep file format as output is mentioned in the problem statement
+
+For determining that the url is a product url or not use all of the 8 techniques
+
+a. Apply regex-based and heuristic-based filter
+b. Scrape the HTML content of pages and analyze the structure for patterns:
+    Look for meta tags like <meta property="og:type" content="product">.
+    Identify breadcrumb navigation that indicates a product page (e.g., Home > Category > Product). 
+c. URL Query Parameters
+    Many e-commerce sites include query parameters in product URLs, such as ?product_id= or ?item=.
+    Detect patterns in query strings for parameters that might identify products.
+d. Anchor Text or Button Text
+    Crawl and extract anchor texts (<a> tags) or button texts associated with links.
+    Look for labels like "Buy Now", "View Product", "Add to Cart", as they often point to product pages.
+e. Structured Data (Schema.org)
+    Many e-commerce sites use structured data (e.g., JSON-LD) to tag product pages.
+    Check for structured data indicating @type: Product.
+f. Analyzing Canonical Tags
+    Product pages often contain <link rel="canonical" href="..."> tags, pointing to the preferred product URL.
+    Extract and analyze canonical tags for patterns.
+g. Sitemap Parsing
+    Check for XML sitemaps (/sitemap.xml) that list all important URLs, including product pages.
+    Parse the sitemap to extract URLs marked as “product.”
+h. Anchor Density
+    Product pages generally have a higher density of <a> tags or images pointing to related products, compared to other pages like home or about pages.
+    Analyze the ratio of links to other content as an indicator.
+
+Point noted while implementing: 
+
+1. Combine heuristic scoring: Assign weights (e.g., meta tag match + breadcrumb match = high score) and treat URLs above a threshold as products.
+2. Use goquery (jQuery-like HTML parser in Go) for clean HTML traversal.
+3. Always check robots.txt first. If disallowed, skip crawling.
+4. Respect crawl-delay, disallow, allow directives.
+5. Use a separate goroutine or priority handler to fetch and parse /sitemap.xml, and queue product-like URLs directly.
+6. Normalize URLs (remove fragments, query strings when comparing visited links).
+7. Avoid external links and assets (CSS, JS).
+8. Set user-agent (some sites block bots without it).
+9. Use HEAD requests where applicable to reduce load before full GET.
+10. Add support for pagination crawling (if "Next" buttons exist).
+
+Point to be noted:
+
+use go routines to optimize as much as possible
+use snyc Map to handle concurrency
+use best practices and write industry standard code
+use easily readable code and meaningful names of functions and variables
+handle edge cases
+Add retry mechanism with exponential backoff for failed requests.
+Catch and log panics to avoid goroutines crashing the entire system.
+Add structured logs (with domain, URL, error, depth).
+Export basic metrics (total pages crawled, product URLs found, errors)
+Write unit tests for core logic like:
+    URL pattern matching
+    Structured data detection
+    Sitemap parsing
+    Mock HTTP responses for deterministic testing.
+write relevant comments
+write a readme.md file which explains all the steps involved in a system design document manner
+write code,comments and readme like human written
+
+Readme/System Design Doc
+
+Break it down into sections like:
+
+1. Objective
+2. Architecture Diagram (describe worker pool, queue, visited set, detectors)
+3. Tech Stack Justification
+4. Flow Diagram (queue → fetch → parse → detect → output)
+5. Scalability Approach
+6. Detection Techniques
+7. Performance Considerations
+8. How to Run & Configure
+9. How to Add New Sites
+10. Limitations and Future Enhancements
+
